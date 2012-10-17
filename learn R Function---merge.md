@@ -132,3 +132,52 @@ merge(x, y, by = "k1", all.x = T)
 ```
 
 从上面的代码和结果，相信大家可以清楚了all的功能。
+
+### 后记
+之后在**plyr包**的join()函数也可以实现merge()的功能，而且在处理速度上还更有优势，这里也介绍下join()
+
+### 函数参数
+
+```r
+join(x, y, by = intersect(names(x), names(y)), type = "left", match = "all")
+```
+
+* x,y：为需要融合的两个数据框
+* by：x和y相融合所需要的相同的列，列名一致；
+* type:
+  * inner: only rows with matching keys in both x and y
+  * left: all rows in x, adding matching columns from y
+  * right: all rows in y, adding matching columns from x
+  * full: all rows in x with matching columns in y, then the rows of y that don’t match x.
+
+* match:
+
+### 实例分析
+
+
+```r
+library(plyr)
+first <- ddply(baseball, "id", summarise, first = min(year))
+system.time(b2 <- merge(baseball, first, by = "id", all.x = TRUE))
+```
+
+```
+##    user  system elapsed 
+##    0.67    0.00    0.71
+```
+
+```r
+system.time(b3 <- join(baseball, first, by = "id"))
+```
+
+```
+##    user  system elapsed 
+##    0.14    0.00    0.14
+```
+
+```r
+b2 <- arrange(b2, id, year, stint)
+b3 <- arrange(b3, id, year, stint)
+stopifnot(all.equal(b2, b3))
+```
+
