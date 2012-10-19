@@ -1,0 +1,63 @@
+R函数介绍：sweep()
+========================================================
+
+### 函数的用途
+
+base包中以*“Sweep out Array Summaries”*，为sweep()函数命名。也表明了该函数的作用，即处理统计量的工具。所以一般结合apply()函数来使用，一般我们需要将apply()统计出来的统计量要代回原数据集去对应操作的时候就需要用到sweep()。
+
+
+> 扫除、清除也是sweep单词的本义。
+
+### 函数的参数
+
+```{r sweep,eval=FALSE,highlight=TRUE,tidy=TRUE}
+sweep(x, MARGIN, STATS, FUN="-", check.margin=TRUE, ...)
+```
+* x:即要处理的原数据集
+* MARGIN：对行或列，或者数列的其他维度进行操作
+* STATS：需要对原数据集操作用到的统计量
+* FUN：操作需要用到的四则运算，默认为减法"-"，当然可以修改成"+","*","/"即加、乘、除
+* check.margin:是否需要检查维度是否适宜的问题，默认为TRUE。
+* ……
+
+### 实例分析
+1、比如我们需要将原数据集所有数据都减去各列的平均数，所以我们需要用apply()计算出每列的平均数，然后用sweep()完成。
+
+```{r sweep example,highlight=TRUE,tidy=TRUE}
+require(stats) # for mean
+head(attitude,10)
+mean.att <- apply(attitude, 2, mean)
+mean.att
+head(sweep(data.matrix(attitude), 2, mean.att),10)# subtract the column means
+
+```
+2、当然可以将默认的减法改变成除法，例如除以每列的标准差
+
+```{r sweep example2,highlight=TRUE,tidy=TRUE}
+
+head(attitude,10)
+sd.att <- apply(attitude, 2, sd)
+sd.att
+head(sweep(data.matrix(attitude), 2, sd.att,"/"),10)# subtract the column sds
+
+```
+3、当然也可以实现标准化，只需要将以上两步骤合并即可。
+```{r sweep example3,highlight=TRUE,tidy=TRUE}
+
+head(attitude)
+mean.att <- apply(attitude, 2, mean)
+
+mean.dat <- sweep(data.matrix(attitude), 2, mean.att)# subtract the column means
+sd.att <- apply(attitude, 2, sd)
+sd.att
+sd.dat <- sweep(data.matrix(mean.dat), 2, sd.att,"/")# subtract the column sds
+head(sd.dat,10)
+```
+#### 对比base包中的标准化命令scale():
+```{r sweep example4,highlight=TRUE,tidy=TRUE}
+
+head(sd.dat,10)
+head(scale(attitude),10)
+```
+可以看出，结果一样。
+…………
