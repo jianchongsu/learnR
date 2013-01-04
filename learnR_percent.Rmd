@@ -1,0 +1,26 @@
+R中显示百分数
+========================================================
+
+把百分数导入到R中，一般会先转换成小数来处理，但是在一些显示结果以及图形上，有时候为了受众的方便，还是需要显示百分数。这个时候就要做一下相应的处理。
+比如：
+```{r paste,tidy=TRUE,highlight=TRUE}
+sa <- runif(10)
+sa
+```
+一种思路就是讲这些小数乘以100，再在这些数后面添加%即可。
+```{r %,tidy=TRUE,highlight=TRUE}
+paste(round(sa*100,2),"%" , sep = "" )
+```
+由此实现显示%的目的，当然这个也可以编写为一个函数，方便以后使用：
+```{r percent,tidy=TRUE,highlight=TRUE,eval=TRUE}
+percent <- function(x, digits = 2, format = "f", ...)
+{
+  paste(formatC(100 * x, format = format, digits = digits, ...), "%", sep = "")
+}
+```
+我们用这个函数来对以上的sa做百分数处理：
+```{r example,tidy=TRUE,highlight=TRUE}
+percent(sa)
+```
+由此这样也实现了我们的目的！
+
